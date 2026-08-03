@@ -6,3 +6,4 @@ export { defaultParams, preset, packParams, OFFSETS, PARAM_BYTES, PARAM_FLOATS }
 export type { GlassParams, PresetName } from './params';
 export { FRAGMENT_SRC, VERTEX_SRC } from './shader';
 export * from './params27.generated';
+export * from './ui.generated';
