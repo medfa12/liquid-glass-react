@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Liquid Glass — effect breakdown</title>
+<style>
+  :root {
+    --bg: #0b0d10; --fg: #e9edf2; --dim: #8d99a8;
+    --line: #1e242c; --card: #12161b; --accent: #6ea8fe;
+  }
+  @media (prefers-color-scheme: light) {
+    :root { --bg:#f6f7f9; --fg:#12161b; --dim:#5b6675; --line:#dde2e9; --card:#fff; --accent:#2563eb; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font: 15px/1.55 ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  header { padding: 28px 24px 8px; max-width: 1180px; margin: 0 auto; }
+  h1 { margin: 0 0 6px; font-size: 22px; letter-spacing: -0.01em; }
+  header p { margin: 0; color: var(--dim); max-width: 70ch; }
+  main { max-width: 1180px; margin: 0 auto; padding: 16px 24px 56px; }
+
+  .stage {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    margin: 18px 0 26px;
+  }
+  @media (max-width: 820px) { .stage { grid-template-columns: 1fr; } }
+
+  .panel {
+    position: relative; border-radius: 14px; overflow: hidden;
+    border: 1px solid var(--line); background: #000; aspect-ratio: 3 / 2;
+  }
+  .panel img.bd {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; display: block;
+  }
+  canvas.glass {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    width: 62%; height: 52%; display: block;
+  }
+  .cap {
+    position: absolute; left: 10px; top: 10px; z-index: 2;
+    font-size: 12px; font-weight: 600; letter-spacing: .02em;
+    background: rgba(0,0,0,.55); color: #fff; padding: 4px 9px; border-radius: 999px;
+    backdrop-filter: blur(6px);
+  }
+
+  .controls { display: grid; grid-template-columns: 1fr 300px; gap: 20px; }
+  @media (max-width: 820px) { .controls { grid-template-columns: 1fr; } }
+
+  .toggle {
+    display: grid; grid-template-columns: 22px 1fr; gap: 2px 8px;
+    padding: 9px 10px; border: 1px solid var(--line); border-radius: 10px;
+    background: var(--card); margin-bottom: 8px; cursor: pointer;
+  }
+  .toggle input { grid-row: 1 / span 2; align-self: start; margin-top: 3px; accent-color: var(--accent); }
+  .tl { font-weight: 600; font-size: 14px; }
+  .tn { color: var(--dim); font-size: 12.5px; }
+
+  aside { border: 1px solid var(--line); border-radius: 12px; background: var(--card); padding: 14px 16px; height: fit-content; }
+  aside h2 { margin: 0 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); }
+  aside p { margin: 0 0 10px; font-size: 13px; color: var(--dim); }
+  .btn {
+    font: inherit; font-size: 13px; padding: 6px 11px; border-radius: 8px;
+    border: 1px solid var(--line); background: transparent; color: var(--fg); cursor: pointer;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .row { display: flex; gap: 8px; margin-bottom: 12px; }
+  code { font: 12.5px ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--accent); }
+  #unsupported { padding: 14px; border: 1px solid #b4442f; border-radius: 10px; color: #ff9c85; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Liquid Glass — effect breakdown</h1>
+  <p>
+    Left is the complete effect. Right follows the toggles, so you can switch each
+    layer off and see exactly what it contributes. Everything runs in WebGL2 from a
+    shader reverse-engineered out of macOS 26/27's QuartzCore — no
+    <code>backdrop-filter</code>, which fundamentally cannot do the refraction.
+  </p>
+</header>
+
+<main>
+  <div id="unsupported" hidden></div>
+
+  <div class="stage">
+    <div class="panel">
+      <span class="cap">Full effect</span>
+      <img class="bd" src="./backdrop.png" alt="">
+      <canvas class="glass"></canvas>
+    </div>
+    <div class="panel">
+      <span class="cap">Your toggles</span>
+      <img class="bd" src="./backdrop.png" alt="">
+      <canvas class="glass"></canvas>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div>
+      <div class="row">
+        <button class="btn" id="allOn">All on</button>
+        <button class="btn" id="allOff">All off</button>
+      </div>
+      <div id="toggles"></div>
+      <label class="toggle">
+        <input type="checkbox" id="morph">
+        <span class="tl">Morph — element merge</span>
+        <span class="tn">Two shapes smooth-unioned before shading, so the fused body is one field. The meniscus comes from the −k·h·(1−h) term.</span>
+      </label>
+      <label class="toggle">
+        <input type="checkbox" id="diffusion">
+        <span class="tl">Diffusion — appear / disappear</span>
+        <span class="tn">Refraction leads, blur follows, body opacity lags. Staggering them reads as condensing; fading together reads as a cross-dissolve.</span>
+      </label>
+    </div>
+
+    <aside>
+      <h2>Why the backdrop is an image</h2>
+      <p>
+        The effect displaces <em>where each fragment samples the backdrop</em>.
+        Browsers deliberately do not expose live backdrop pixels to WebGL, and
+        <code>backdrop-filter</code> has no hook to move a sample position. So
+        the backdrop is supplied explicitly — here, a static test pattern.
+      </p>
+      <h2>Fidelity</h2>
+      <p>
+        Verified against a real <code>NSGlassEffectView</code> capture on macOS
+        26.5.2: <strong>34.4 dB</strong> on the element interior, 19.9 dB overall.
+        The rim is the weak spot — corner shape and the outermost specular.
+      </p>
+      <h2>Requires</h2>
+      <p>
+        WebGL2. There is no WebGL1 path: the blur is <code>textureLod()</code>
+        against a mip chain, which WebGL1 cannot express.
+      </p>
+    </aside>
+  </div>
+</main>
+
+<script type="module" src="./app.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+{
+  "name": "@liquid-glass/react",
+  "version": "0.1.0",
+  "description": "Liquid Glass for React — WebGL2 refraction, edge bleed, and analytic shadow, derived from macOS 26/27 QuartzCore shaders.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts --clean",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "react": ">=17",
+    "react-dom": ">=17"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.31",
+    "tsup": "^8.0.0",
+    "typescript": "5.4"
+  },
+  "keywords": [
+    "liquid-glass",
+    "glassmorphism",
+    "webgl",
+    "shader",
+    "refraction",
+    "react"
+  ]
+}
