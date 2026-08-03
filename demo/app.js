@@ -18,14 +18,14 @@ void main() {
 function baseParams() {
   return {
     halfSize: [160, 100], exponent: 6.5,                 // FITTED exponent
-    innerRefractAmount: 8, innerRefractInvHeight: 1 / 30,
+    innerRefractAmount: 4, innerRefractInvHeight: 1 / 30,
     outerRefractAmount: -13, outerRefractInvHeight: 1 / 16,  // OPPOSITE sign
     refractOpacity: 0.65, complexRefraction: 1,
     refractThreshold: [-30, 0],
     displacementMat: [1, 0, 0, 1], refractAngle: [1, 0],
     aberrationAmount: 3, aberrationInvHeight: 1 / 22,
     aberrationOffset: 0, aberrationAngle: [1, 0],
-    blurRadius: 22,                                       // FITTED live (sigma ~6)
+    blurRadius: 28,                                       // FITTED live (sigma ~6)
     blurDist: [0, 8, 20, 40], blurAlpha: [1, 0.6, 0.3, 0],
     edgeBleedAmount: 24, edgeBleedInvHeight: 1 / 20,
     edgeBleedBlurRadius: 32, edgeBleedDist: [0, 26],
@@ -53,7 +53,9 @@ function baseParams() {
     keyFillAmount: 0, keyFillEffectOffset: 4, keyFillColorBias: 0,
     blurFillBlurRadius: 48, blurFillLightenOpacity: 0,
     blurFillDarkenOpacity: 0, blurFillNormalOpacity: 0,
-    scaleRef: 75,
+    scaleRef: 75, adaptiveAmount: 0.6,
+    luminanceValues: [0.8,0.9,1.1,0.825],
+    adaptiveTintDark: 0.12, adaptiveTintLight: 0.95,
   };
 }
 
