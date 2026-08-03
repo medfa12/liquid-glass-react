@@ -18,18 +18,18 @@ void main() {
 function baseParams() {
   return {
     halfSize: [160, 100], exponent: 6.5,                 // FITTED exponent
-    innerRefractAmount: 26, innerRefractInvHeight: 1 / 30,
+    innerRefractAmount: 8, innerRefractInvHeight: 1 / 30,
     outerRefractAmount: -13, outerRefractInvHeight: 1 / 16,  // OPPOSITE sign
     refractOpacity: 0.65, complexRefraction: 1,
     refractThreshold: [-30, 0],
     displacementMat: [1, 0, 0, 1], refractAngle: [1, 0],
-    aberrationAmount: 7, aberrationInvHeight: 1 / 22,
+    aberrationAmount: 3, aberrationInvHeight: 1 / 22,
     aberrationOffset: 0, aberrationAngle: [1, 0],
-    blurRadius: 12,                                       // FITTED live (sigma ~6)
+    blurRadius: 22,                                       // FITTED live (sigma ~6)
     blurDist: [0, 8, 20, 40], blurAlpha: [1, 0.6, 0.3, 0],
-    edgeBleedAmount: 14, edgeBleedInvHeight: 1 / 20,
+    edgeBleedAmount: 24, edgeBleedInvHeight: 1 / 20,
     edgeBleedBlurRadius: 32, edgeBleedDist: [0, 26],
-    edgeBleedOpacity: 0.5, bleedDarken: [0.92, 0],
+    edgeBleedOpacity: 0.15, bleedDarken: [0.92, 0],
     edgeRange: [0, 8], edgeOpacity: [0, 0],
     lightDir: [0, -1], highlightThreshold: 0.35,
     highlightHeight: 10, highlightSoftness: 0.5, highlightIntensity: 0.85,
@@ -53,6 +53,7 @@ function baseParams() {
     keyFillAmount: 0, keyFillEffectOffset: 4, keyFillColorBias: 0,
     blurFillBlurRadius: 48, blurFillLightenOpacity: 0,
     blurFillDarkenOpacity: 0, blurFillNormalOpacity: 0,
+    scaleRef: 75,
   };
 }
 
